@@ -16,10 +16,17 @@
                 <a href="{{url_for('home')}}" class=" text-decoration-none  text-light" ><li >Home</li></a>
                 <a href="{{url_for('about')}}" class="text-decoration-none  text-light"> <li>About Us</li></a>
             </ul>
+            {% if current_user.is_authenticated %}
+            <ul class="list-unstyled d-flex gap-5 ">   
+                <a href="{{url_for('profile')}}" class=" text-decoration-none  text-light" ><li>Profile</li></a>
+                <a href="{{url_for('logout')}}" class="text-decoration-none  text-light"> <li>Logout</li></a>
+            </ul>
+            {% else %}
             <ul class="list-unstyled d-flex gap-5 ">   
                 <a href="{{url_for('auth')}}" class=" text-decoration-none  text-light" ><li >Authorization</li></a>
                 <a href="{{url_for('register')}}" class="text-decoration-none  text-light"> <li>Registration</li></a>
             </ul>
+            {% endif %}
         </nav>
     </header>
     {% block content %}
