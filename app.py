@@ -1,8 +1,5 @@
 from flask import Flask, render_template, redirect, url_for, flash, session
 from forms import LoginForm, RegistrationForm
-from flask_login import current_user
-from flask_sqlalchemy import SQLAlchemy
-from flask_login import UserMixin
 from extensions import db
 
 app = Flask(__name__)
@@ -47,6 +44,8 @@ def register():
         user = Users(firstName=form.firstName.data, lastName=form.lastName.data, email=form.email.data, password=form.password.data)
         db.session.add(user)
         db.session.commit()
+        flash("You have been registered", "success")
+        return redirect(url_for('home'))
     return render_template('register.html', form=form)
 
 @app.route("/about")
