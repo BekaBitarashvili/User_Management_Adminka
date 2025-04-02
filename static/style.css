@@ -65,7 +65,7 @@ body{
     box-shadow: 0 0 4px rgba(9, 126, 251, 0.3);
 }
 
-.signup-container   button {
+.submit {
     display: block;
     padding: 15px;
     width: 150px;
@@ -178,4 +178,8 @@ footer{
 .about-names{
     text-align: center;
     margin-top: 10px;
+}
+
+.flashes {
+    padding: 0;
 }
