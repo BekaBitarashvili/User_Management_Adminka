@@ -16,7 +16,7 @@
                 <a href="{{url_for('home')}}" class=" text-decoration-none  text-light" ><li >Home</li></a>
                 <a href="{{url_for('about')}}" class="text-decoration-none  text-light"> <li>About Us</li></a>
             </ul>
-            {% if current_user.is_authenticated %}
+            {% if "email" in session %}
             <ul class="list-unstyled d-flex gap-5 ">   
                 <a href="{{url_for('profile')}}" class=" text-decoration-none  text-light" ><li>Profile</li></a>
                 <a href="{{url_for('logout')}}" class="text-decoration-none  text-light"> <li>Logout</li></a>
@@ -29,6 +29,16 @@
             {% endif %}
         </nav>
     </header>
+    {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+      <ul class=flashes>
+      {% for category, message in messages %}
+      <div class="alert alert-{{ category }}">
+        {{ message }}
+       </div>
+       {% endfor %}
+    {% endif %}
+    {% endwith %}
     {% block content %}
  
     {% endblock %}
