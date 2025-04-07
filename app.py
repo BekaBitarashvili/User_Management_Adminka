@@ -1,6 +1,8 @@
 from flask import Flask, render_template, redirect, url_for, flash, session
 from forms import LoginForm, RegistrationForm
 from extensions import db
+from flask_login import UserMixin, current_user, login_user, login_required, logout_user
+from flask_login import LoginManager
 
 app = Flask(__name__)
 
@@ -8,7 +10,10 @@ app.config['SECRET_KEY'] = 'pythonsecret'
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///user.db'
 db.init_app(app)
 
-class Users(db.Model):
+login_manager = LoginManager()
+login_manager.init_app(app)
+
+class Users(db.Model, UserMixin):
     id = db.Column(db.Integer, primary_key=True)
     firstName = db.Column(db.String(20), unique=True, nullable=False)
     lastName = db.Column(db.String(20), unique=True, nullable=False)
@@ -18,8 +23,9 @@ class Users(db.Model):
     def __repr__(self):
         return f"User('{self.firstName}', '{self.lastName}', '{self.email}')"
 
-USER_EMAIL = "test@gmail.com"
-USER_PASS = "testtest"
+@login_manager.user_loader
+def load_user(user_id):
+    return Users.query.get(int(user_id))
 
 @app.route("/")
 def home():
@@ -28,11 +34,14 @@ def home():
 @app.route("/auth", methods=['GET', 'POST'])
 def auth():
     form = LoginForm()
+    if current_user.is_authenticated:
+        return redirect(url_for("home"))
     if form.validate_on_submit():
-        if form.email.data == USER_EMAIL and form.password.data == USER_PASS:
-            session["email"] = form.email.data
-            flash("You are now logged in", "success")
-            return redirect(url_for('home'))
+        user = Users.query.filter_by(email=form.email.data).first()
+        if user and user.password == form.password.data:
+              login_user(user)
+              flash("You are now logged in", "success")
+              return redirect(url_for('home'))
         else:
             flash("Your Email or password is incorrect", "danger")
     return render_template("auth.html", form = form)
@@ -53,12 +62,14 @@ def about():
     return render_template("about.html")
 
 @app.route("/profile")
+@login_required
 def profile():
-    return render_template("profile.html")
+    form = RegistrationForm()
+    return render_template("profile.html", form=form)
 
 @app.route("/logout")
 def logout():
-    session.pop("email", None)
+    logout_user()
     flash('You have been successfully logged out','info')
     return render_template("base.html")
 
